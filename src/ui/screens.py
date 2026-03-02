@@ -1,4 +1,6 @@
-from widgets import Ui_frame, Button, Slider, Screen
+from ui.widgets import Ui_frame, Button, Slider, Screen, Sprite
+import game.assets
+
 
 def create_main_menu(engine):
 
@@ -21,18 +23,23 @@ def create_main_menu(engine):
         Button(" [ EXIT ] ", exit_game_action)
     ]
 
-    return Screen(ui=Ui_frame(buttons))
+    background = Sprite(game.assets.bg_anims)
+    foreground = Sprite(game.assets.shellcat_anims)
+    bgCoord = (0, 0)
+    fgCoord = (10, 45)
+
+    return Screen(ui=Ui_frame(buttons), foreground=foreground, background=background, bgCoord=bgCoord, fgCoord=fgCoord)
 
 def create_settings_menu(engine):
 
     def inc_color_action():
-        engine.color += 1 % len(engine.colors)
+        engine.color = (engine.color + 1) % len(engine.colors)
     
     def dec_color_action():
-        engine.color -= 1 % len(engine.colors)
+        engine.color = (engine.color - 1) % len(engine.colors)
     
     def open_main_action():
-        engine.change_scene("MAIN")
+        engine.change_screen("MAIN")
 
     buttons = [
         Slider(" [ COLOR ] ", inc_color_action, dec_color_action),
