@@ -1,12 +1,13 @@
 import time
 import curses
-from game.settings import SCREEN_HEIGHT, SCREEN_WIDTH
+from game.settings import SCREEN_HEIGHT, SCREEN_WIDTH, SLEEP_TIMER, FRAME_DURATION
+
 
 class Engine:
     def __init__(self, stdscr):
         self.stdscr = stdscr
         self.running = True
-        self.frameDuration = 0.5
+        self.frameDuration = FRAME_DURATION
 
         # Screen Colors
         self.color = 1
@@ -18,7 +19,7 @@ class Engine:
 
         # System settings
         curses.curs_set(0) # Hide cursor
-        self.stdscr.timeout(300) # Non-blocking input check
+        self.stdscr.timeout(100) # Non-blocking input check
         self._init_colors()
 
         # Window Size
@@ -42,9 +43,9 @@ class Engine:
             curses.init_color(15, 843, 894, 400) # Light Yellow - 15
 
         curses.init_pair(2, curses.COLOR_WHITE, 10)
-        curses.init_pair(3, 13, 10)
-        curses.init_pair(4, 14, 10)
-        curses.init_pair(1, 15, 10)
+        curses.init_pair(3, 13, 10) # Light Red - Terminal
+        curses.init_pair(4, 14, 10) # Light Cyan - Terminal
+        curses.init_pair(1, 15, 10) # Light Yellow - Terminal
 
     def register_screen(self, key, screen):
         self.screens[key] = screen
@@ -56,6 +57,8 @@ class Engine:
 
         viewport_pad = curses.newpad(self.HEIGHT,self.WIDTH)
         updateFrameTime = time.time()
+        idleTime = time.time()
+        isSleep = False
         
         while self.running:
 
@@ -85,16 +88,28 @@ class Engine:
 
                 self.viewport_window.keypad(True)
 
+            if time.time() - idleTime > SLEEP_TIMER:
+                if isSleep == False:
+                    self.current_screen.foreground.set_default_state("SHELLCAT_SLEEP")
+                self.current_screen.foreground.set_state("SHELLCAT_SLEEP", 0.1)
+                isSleep = True
+            else:
+                if isSleep == True:
+                    self.current_screen.foreground.set_default_state("SHELLCAT_IDLE")
+                    self.current_screen.foreground.set_state("SHELLCAT_IDLE", 0.1)
+                isSleep = False
+
 
             # Handle Input
             if self.current_screen and key != -1:
                     self.current_screen.ui.handle_input(key)
+                    idleTime = time.time()
                     
             # Update Foreground Sprite
             if self.current_screen and self.current_screen.foreground:
                     if time.time() >= updateFrameTime:
                         self.current_screen.foreground.update()
-                        updateFrameTime = time.time() + self.frameDuration
+                        updateFrameTime += self.frameDuration
 
             # Render new frame
             self.stdscr.erase()

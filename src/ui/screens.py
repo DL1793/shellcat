@@ -26,7 +26,7 @@ def create_main_menu(engine):
     background = Sprite(game.assets.bg_anims)
     foreground = Sprite(game.assets.shellcat_anims)
     bgCoord = (0, 0)
-    fgCoord = (10, 45)
+    fgCoord = (10, 15)
 
     return Screen(ui=Ui_frame(buttons), foreground=foreground, background=background, bgCoord=bgCoord, fgCoord=fgCoord)
 

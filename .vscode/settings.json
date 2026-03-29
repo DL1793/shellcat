@@ -1,0 +1,26 @@
+{
+    "editor.codeLens": true,
+    
+    // Enable the "References" text
+    "python.analysis.codeLens.references": true,
+    "python.analysis.codeLens.implementations": true,
+
+    // Allow Pylance to index your whole project
+    "python.analysis.userFileIndexingLimit": -1,
+
+    // Tell Pylance where your source code root is
+    "python.analysis.extraPaths": [
+        "./src"
+    ],
+    
+    // Force aggressive indexing
+    "python.analysis.indexing": true,
+    "python.analysis.packageIndexDepths": [
+        { "name": "", "depth": 5 }
+    ],
+
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.packageIndexDepths": [
+    { "name": "curses", "depth": 2 }
+]
+}
